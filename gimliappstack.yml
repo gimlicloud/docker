@@ -1,0 +1,44 @@
+version: '3.8'
+services:
+  tubesync:
+    image: ghcr.io/meeb/tubesync:latest
+    container_name: tubesync
+    restart: unless-stopped
+    ports:
+      - 4848:4848
+    volumes:
+      - /some/directory/tubesync-config:/config
+      - /media/gimli/GimliAppStorage/Youtube:/downloads
+    environment:
+      - TZ=America/Chicago
+      - PUID=1000
+      - PGID=1000
+services:
+  uptime-kuma:
+    image: louislam/uptime-kuma:latest
+    ports:
+      - 3001:3001
+    volumes:
+      - /portainer/Files/AppData/Config/UptimeKuma:/app/data
+services:
+  app:
+    image: 'jc21/nginx-proxy-manager:latest'
+    restart: unless-stopped
+    ports:
+      - '80:80'
+      - '81:81'
+      - '443:443'
+    volumes:
+      - ./data:/data
+      - ./letsencrypt:/etc/letsencrypt
+services:
+  homeassistant:
+    image: linuxserver/homeassistant:latest
+    ports:
+      - 8123:8123
+    environment:
+      PUID: '1000'
+      PGID: '1000'
+      TZ: 'American/Chicago'
+    volumes:
+      - ./config:/config
